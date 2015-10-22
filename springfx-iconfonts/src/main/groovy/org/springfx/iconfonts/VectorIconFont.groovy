@@ -6,8 +6,7 @@ import javafx.scene.text.Text
  *
  * @author Stephan Grundner
  */
-interface IconFont {
+interface VectorIconFont extends IconFont {
 
-    Properties getMapping()
-    Text getIcon(String name, double size)
+    Text getIcon(String name)
 }

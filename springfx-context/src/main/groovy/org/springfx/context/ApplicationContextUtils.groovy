@@ -17,12 +17,14 @@ import org.springframework.context.ConfigurableApplicationContext
  */
 final class ApplicationContextUtils {
 
-    static Application getApplication(ApplicationContext context) {
-        (Application) getSingletonBean(context, ApplicationContextHolder.APPLICATION_BEAN_NAME)
+    static Application getApplication() {
+        def applicationContext = ApplicationContextHolder.context
+        (Application) getSingletonBean(applicationContext, ApplicationContextHolder.APPLICATION_BEAN_NAME)
     }
 
-    static Stage getPrimaryStage(ApplicationContext context) {
-        (Stage) getSingletonBean(context, ApplicationContextHolder.PRIMARY_STAGE_BEAN_NAME)
+    static Stage getPrimaryStage() {
+        def applicationContext = ApplicationContextHolder.context
+        (Stage) getSingletonBean(applicationContext, ApplicationContextHolder.PRIMARY_STAGE_BEAN_NAME)
     }
 
     /**

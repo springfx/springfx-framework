@@ -1,9 +1,6 @@
 package org.springfx.context
 
-import javafx.application.Application
-import javafx.stage.Stage
 import org.springframework.context.ApplicationContext
-import org.springframework.context.ConfigurableApplicationContext
 
 /**
  * Implementation for {@link ApplicationContextHolderStrategy}
@@ -12,7 +9,7 @@ import org.springframework.context.ConfigurableApplicationContext
  * @author Stephan Grundner
  * @since 1.0
  */
-class DefaultApplicationContextHolderStrategy implements ApplicationContextHolderStrategy {
+class DefaultApplicationContextHolderStrategy extends AbstractApplicationContextHolderStrategy {
 
     private static final ThreadLocal<ApplicationContext> contextHolder =
             new InheritableThreadLocal<ApplicationContext>()
@@ -23,11 +20,7 @@ class DefaultApplicationContextHolderStrategy implements ApplicationContextHolde
     }
 
     @Override
-    void bindContext(ConfigurableApplicationContext applicationContext, Application application, Stage primaryStage) {
-        def binder = ApplicationContextUtils.getBeanOrInstance(applicationContext,
-                ApplicationContextBinder, DefaultApplicationContextBinder)
-
-        binder.bindContext(applicationContext, application, primaryStage)
+    void setApplicationContext(ApplicationContext applicationContext) {
         contextHolder.set(applicationContext)
     }
 }

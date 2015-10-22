@@ -1,7 +1,6 @@
 package org.springfx.text
 
 import javafx.scene.text.Font
-import org.springframework.core.io.Resource
 
 /**
  *
@@ -9,5 +8,5 @@ import org.springframework.core.io.Resource
  */
 interface FontProvider {
 
-    Font getFont(Resource resource, double size)
+    Font getFont(double size)
 }

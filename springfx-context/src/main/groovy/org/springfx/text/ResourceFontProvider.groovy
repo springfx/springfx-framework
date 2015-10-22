@@ -16,7 +16,7 @@ class ResourceFontProvider implements FontProvider {
     }
 
     @Override
-    Font getFont(Resource resource, double size) {
+    Font getFont(double size) {
         def font = Font.loadFont(resource.inputStream, size)
 
         font

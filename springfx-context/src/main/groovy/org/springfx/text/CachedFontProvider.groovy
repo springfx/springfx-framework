@@ -1,7 +1,6 @@
 package org.springfx.text
 
 import javafx.scene.text.Font
-import org.springframework.core.io.Resource
 
 /**
  *
@@ -24,10 +23,10 @@ class CachedFontProvider implements FontProvider {
     }
 
     @Override
-    Font getFont(Resource resource, double size) {
+    Font getFont(double size) {
         def font = fontBySize.get(size)
         if (font == null) {
-            font = fontProvider.getFont(resource, size)
+            font = fontProvider.getFont(size)
             fontBySize.put(size, font)
         }
         font

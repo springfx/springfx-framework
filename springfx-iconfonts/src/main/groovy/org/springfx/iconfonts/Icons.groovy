@@ -1,6 +1,5 @@
 package org.springfx.iconfonts
 
-import javafx.beans.binding.Bindings
 import javafx.beans.value.ObservableValueBase
 import javafx.scene.text.Font
 import javafx.scene.text.Text

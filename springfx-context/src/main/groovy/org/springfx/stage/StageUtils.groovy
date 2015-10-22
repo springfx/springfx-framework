@@ -17,8 +17,7 @@ final class StageUtils {
     }
 
     Stage getPrimaryStage() {
-        def context = ApplicationContextHolder.context
-        ApplicationContextUtils.getPrimaryStage(context)
+        ApplicationContextUtils.getPrimaryStage()
     }
 
     private StageUtils() {}
