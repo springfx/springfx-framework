@@ -7,4 +7,7 @@ build
 *.iml
 
 /springfx-security-core
+/springfx-samples
+/springfx-controls
+/springfx-boot
 /noname

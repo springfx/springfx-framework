@@ -1,7 +1,9 @@
 rootProject.name = 'springfx-framework'
-include 'springfx-core'
+include 'springfx-context'
+include 'springfx-controls'
+include 'springfx-iconfonts'
 include 'springfx-security-core'
-include 'springfx-core-samples'
+include 'springfx-samples'
 include 'noname'
-
+include 'springfx-boot'
 
