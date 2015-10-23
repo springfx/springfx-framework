@@ -7,11 +7,11 @@ import org.springframework.core.io.Resource
  *
  * @author Stephan Grundner
  */
-class ResourceFontProvider implements FontProvider {
+class ResourceFontSource implements FontSource {
 
     private final Resource resource
 
-    ResourceFontProvider(Resource resource) {
+    ResourceFontSource(Resource resource) {
         this.resource = resource
     }
 

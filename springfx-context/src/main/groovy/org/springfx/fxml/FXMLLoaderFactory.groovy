@@ -15,8 +15,6 @@ import org.springfx.context.ApplicationContextUtils
  */
 class FXMLLoaderFactory implements FactoryBean<FXMLLoader>, ApplicationContextAware {
 
-    static final BEAN_NAME = 'fxmlLoader'
-
     ApplicationContext applicationContext
 
     @Override

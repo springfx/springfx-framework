@@ -19,9 +19,18 @@ class ApplicationContextHolder {
     private static ApplicationContextHolderStrategy strategy
 
     static {
+        // TODO Provide other strategies
         strategy = new DefaultApplicationContextHolderStrategy()
     }
 
+    /**
+     * Bind the specified {@link org.springframework.context.ApplicationContext} instance to the current JavaFX thread.
+     *
+     * @see {org.springfx.context.ApplicationContextBinder#bindContext}
+     * @param applicationContext An inactive! application context
+     * @param application The application to get bound
+     * @param primaryStage The primary stage of the application
+     */
     static void bindContext(ConfigurableApplicationContext applicationContext, Application application, Stage primaryStage) {
         strategy.bindContext(applicationContext, application, primaryStage)
     }

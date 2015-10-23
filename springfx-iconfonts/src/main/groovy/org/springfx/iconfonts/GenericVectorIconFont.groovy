@@ -3,8 +3,8 @@ package org.springfx.iconfonts
 import javafx.scene.text.Font
 import javafx.scene.text.Text
 import org.springframework.core.io.Resource
-import org.springfx.text.FontProvider
-import org.springfx.text.ResourceFontProvider
+import org.springfx.text.FontSource
+import org.springfx.text.ResourceFontSource
 
 /**
  *
@@ -15,16 +15,16 @@ class GenericVectorIconFont implements VectorIconFont {
     final Properties mapping
     final Resource fontLocation
 
-    private FontProvider fontProvider
+    private FontSource fontProvider
 
-    GenericVectorIconFont(Properties mapping, FontProvider fontProvider) {
+    GenericVectorIconFont(Properties mapping, FontSource fontProvider) {
         this.mapping = mapping
         this.fontLocation = fontLocation
         this.fontProvider = fontProvider
     }
 
     GenericVectorIconFont(Properties mapping, Resource fontLocation) {
-        this(mapping, new ResourceFontProvider(fontLocation))
+        this(mapping, new ResourceFontSource(fontLocation))
     }
 
     @Override

@@ -8,6 +8,8 @@ import org.springframework.beans.factory.NoUniqueBeanDefinitionException
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ConfigurableApplicationContext
+import org.springframework.context.MessageSource
+import org.springfx.context.i18n.LocalePropertyHolder
 
 /**
  * Utilities for simplify usage of {@link ApplicationContext}.
@@ -17,14 +19,39 @@ import org.springframework.context.ConfigurableApplicationContext
  */
 final class ApplicationContextUtils {
 
+    /**
+     * Get the singleton instance for the current {@link Application}.
+     *
+     * @return The singleton instance for the current {@link Application}
+     */
     static Application getApplication() {
         def applicationContext = ApplicationContextHolder.context
         (Application) getSingletonBean(applicationContext, ApplicationContextHolder.APPLICATION_BEAN_NAME)
     }
 
+    /**
+     * Get the primary {@link Stage} instance for the current {@link Application}.
+     *
+     * @return The primary {@link Stage} instance for the current {@link Application}
+     */
     static Stage getPrimaryStage() {
         def applicationContext = ApplicationContextHolder.context
         (Stage) getSingletonBean(applicationContext, ApplicationContextHolder.PRIMARY_STAGE_BEAN_NAME)
+    }
+
+    /**
+     * Get the singleton instance of {@link LocalePropertyHolder} for the current {@link Application}.
+     *
+     * @return The singleton instance of {@link LocalePropertyHolder} for the current {@link Application}
+     */
+    static LocalePropertyHolder getLocalePropertyHolder() {
+        def applicationContext = ApplicationContextHolder.context
+        (LocalePropertyHolder) getSingletonBean(applicationContext, LocalePropertyHolder)
+    }
+
+    static MessageSource getMessageSource() {
+        def applicationContext = ApplicationContextHolder.context
+        applicationContext.getBean(MessageSource)
     }
 
     /**

@@ -6,7 +6,7 @@ import javafx.scene.text.Font
  *
  * @author Stephan Grundner
  */
-interface FontProvider {
+interface FontSource {
 
     Font getFont(double size)
 }
