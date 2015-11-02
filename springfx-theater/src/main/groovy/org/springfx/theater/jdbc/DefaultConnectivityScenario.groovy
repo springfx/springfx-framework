@@ -72,7 +72,6 @@ class DefaultConnectivityScenario extends AbstractScenario implements Connectivi
         yesButton.onAction = new EventHandler<ActionEvent>() {
             @Override
             void handle(ActionEvent event) {
-                println "OK"
                 dataSourcePane.dataBinder.validate()
                 println dataSourcePane.dataBinder.bindingResult
             }

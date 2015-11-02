@@ -2,6 +2,7 @@ package org.springfx.theater
 
 import javafx.stage.Stage
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
@@ -23,7 +24,7 @@ class TheaterConfiguration {
 
     @Bean
     @Autowired
-    ConnectivityScenario connectivityScenario(Stage stage) {
+    ConnectivityScenario connectivityScenario(@Qualifier('primaryStage') Stage stage) {
         new DefaultConnectivityScenario(stage)
     }
 
