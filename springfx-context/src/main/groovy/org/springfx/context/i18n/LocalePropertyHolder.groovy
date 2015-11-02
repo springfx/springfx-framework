@@ -17,7 +17,7 @@ import org.springframework.context.i18n.LocaleContext
  */
 class LocalePropertyHolder implements LocaleContext {
 
-    private final localeProperty = new SimpleObjectProperty<Locale>()
+    private final localeProperty = new SimpleObjectProperty<Locale>(this, 'locale')
 
     ObjectProperty<Locale> localeProperty() {
         localeProperty

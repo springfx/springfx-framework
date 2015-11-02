@@ -5,9 +5,6 @@ build
 
 .idea
 *.iml
+gradle.properties
 
-/springfx-security-core
-/springfx-samples
-/springfx-controls
-/springfx-boot
 /noname

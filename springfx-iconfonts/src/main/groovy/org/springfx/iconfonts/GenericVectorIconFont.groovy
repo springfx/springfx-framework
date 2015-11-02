@@ -9,6 +9,7 @@ import org.springfx.text.ResourceFontSource
 /**
  *
  * @author Stephan Grundner
+ * @since 1.0
  */
 class GenericVectorIconFont implements VectorIconFont {
 

@@ -156,6 +156,10 @@ final class ApplicationContextUtils {
         (T) getPrototypeBean(context, beanName)
     }
 
+    static boolean containsBean(ApplicationContext context, Class<?> type) {
+        context.getBeanNamesForType(type).length > 0
+    }
+
     static void autowireBeanProperties(ConfigurableApplicationContext context, Object existingBean, int autowireMode = AutowireCapableBeanFactory.AUTOWIRE_NO,  boolean dependencyCheck = false) {
         def beanFactory = context.autowireCapableBeanFactory
         beanFactory.autowireBeanProperties(existingBean, autowireMode, false)

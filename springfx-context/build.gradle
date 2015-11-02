@@ -20,5 +20,6 @@ dependencies {
     compile('org.springframework:spring-context:4.2.2.RELEASE') {
         exclude module: 'commons-logging'
     }
+    compile 'commons-beanutils:commons-beanutils:1.9.2'
 }
 

@@ -1,0 +1,5 @@
+.form-pane .grid {
+    -fx-padding: 1em;
+    -fx-vgap: 0.5em;
+    -fx-hgap: 0.5em;
+}

@@ -88,6 +88,8 @@ abstract class AbstractApplicationContextHolderStrategy implements ApplicationCo
         assert !applicationContext.active
         assert applicationContext.parent == null
 
+        Thread.currentThread().contextClassLoader = applicationContext.classLoader
+
         applicationContext.addBeanFactoryPostProcessor(new BeanFactoryPostProcessor() {
             @Override
             void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
@@ -95,20 +97,20 @@ abstract class AbstractApplicationContextHolderStrategy implements ApplicationCo
                 registerPrimaryStageSingleton(beanFactory, primaryStage)
                 registerLocalePropertyHolder((BeanDefinitionRegistry) beanFactory)
                 registerFXMLLoader((BeanDefinitionRegistry) beanFactory)
+
+                def localePropertyHolder = beanFactory.getBean(LocalePropertyHolder)
+                def localeProperty = localePropertyHolder.localeProperty()
+                if (localeProperty) {
+                    localeProperty.addListener(new ChangeListener<Locale>() {
+                        @Override
+                        void changed(ObservableValue<? extends Locale> observable, Locale oldValue, Locale newValue) {
+                            LocaleContextHolder.locale = newValue
+                        }
+                    })
+                }
             }
         })
 
-        applicationContext.refresh()
-        ApplicationContextUtils.autowireBeanPropertiesByType(applicationContext, application)
-
-        // Sync changes on the locale property singleton with the spring LocaleContextHolder
-        def localePropertyHolder = applicationContext.getBean(LocalePropertyHolder)
-        localePropertyHolder.localeProperty().addListener(new ChangeListener<Locale>() {
-            @Override
-            void changed(ObservableValue<? extends Locale> observable, Locale oldValue, Locale newValue) {
-                LocaleContextHolder.locale = newValue
-            }
-        })
         this.applicationContext = applicationContext
     }
 

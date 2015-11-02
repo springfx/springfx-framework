@@ -5,6 +5,7 @@ import javafx.scene.text.Text
 /**
  *
  * @author Stephan Grundner
+ * @since 1.0
  */
 interface IconFont {
 

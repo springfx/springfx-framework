@@ -1,4 +1,4 @@
-package org.springfx.context.i18n
+package org.springfx.context
 
 import com.sun.javafx.binding.ExpressionHelper
 import com.sun.javafx.collections.ObservableListWrapper
@@ -10,25 +10,32 @@ import javafx.beans.value.ObservableValue
 import javafx.collections.ListChangeListener
 import javafx.collections.ObservableList
 import org.springframework.context.MessageSource
-import org.springfx.context.ApplicationContextUtils
+import org.springframework.context.MessageSourceResolvable
+import org.springframework.util.StringUtils
+import org.springfx.context.i18n.LocalePropertyHolder
 
 /**
  *
  * @author Stephan Grundner
  */
-class MessageSourceProperty extends ReadOnlyStringProperty {
+class MessageProperty extends ReadOnlyStringProperty implements MessageSourceResolvable {
 
     final MessageSource messageSource
     final String code
-    private final ReadOnlyProperty<Locale> localeProperty
+    final String defaultMessage
 
-    final ObservableList<Object> args
+    private final ReadOnlyProperty<Locale> localeProperty
+    private final ObservableList<Object> argumentsProperty = new ObservableListWrapper<>([])
 
     ExpressionHelper<String> helper
 
-    MessageSourceProperty(String code, ObservableList<Object> args, MessageSource messageSource, ReadOnlyProperty<Locale> localeProperty) {
+    MessageProperty(String code, Object[] arguments, String defaultMessage, MessageSource messageSource, ReadOnlyProperty<Locale> localeProperty) {
+        assert !StringUtils.isEmpty(code)
         this.code = code
-        this.args = args
+        this.arguments = arguments
+        this.defaultMessage = defaultMessage
+
+        assert messageSource != null
         this.messageSource = messageSource
         this.localeProperty = localeProperty
 
@@ -38,7 +45,7 @@ class MessageSourceProperty extends ReadOnlyStringProperty {
                 fireValueChangedEvent()
             }
         })
-        args.addListener(new ListChangeListener<Object>() {
+        argumentsProperty.addListener(new ListChangeListener<Object>() {
             @Override
             void onChanged(ListChangeListener.Change<?> change) {
                 fireValueChangedEvent()
@@ -46,25 +53,50 @@ class MessageSourceProperty extends ReadOnlyStringProperty {
         })
     }
 
-    MessageSourceProperty(String code, ObservableList<Object> args, MessageSource messageSource, LocalePropertyHolder localePropertyHolder) {
-        this(code, args, messageSource, localePropertyHolder.localeProperty())
+    MessageProperty(String code, Object[] arguments, String defaultMessage, MessageSource messageSource, LocalePropertyHolder localePropertyHolder) {
+        this(code, arguments, defaultMessage, messageSource, localePropertyHolder.localeProperty())
     }
 
-    MessageSourceProperty(String code, ObservableList<Object> args, LocalePropertyHolder localePropertyHolder) {
-        this(code, args, ApplicationContextUtils.messageSource, localePropertyHolder)
+    MessageProperty(String code, Object[] arguments, String defaultMessage, LocalePropertyHolder localePropertyHolder) {
+        this(code, arguments, defaultMessage, ApplicationContextUtils.messageSource, localePropertyHolder)
     }
 
-    MessageSourceProperty(String code, ObservableList<Object> args) {
-        this(code, args, ApplicationContextUtils.localePropertyHolder)
+    MessageProperty(String code, Object[] arguments, String defaultMessage) {
+        this(code, arguments, defaultMessage, ApplicationContextUtils.localePropertyHolder)
     }
 
-    MessageSourceProperty(String code) {
-        this(code, new ObservableListWrapper<>(new ArrayList<Object>()))
+    MessageProperty(String code, Object[] arguments) {
+        this(code, arguments, (String) null)
+    }
+
+    MessageProperty(String code) {
+        this(code, (String) null)
+    }
+
+    @Override
+    String[] getCodes() {
+        [code] as String[]
+    }
+
+    @Override
+    Object[] getArguments() {
+        argumentsProperty.toArray()
+    }
+
+    void setArguments(Object[] arguments) {
+        argumentsProperty.clear()
+        if (arguments != null) {
+            argumentsProperty.addAll(arguments)
+        }
+    }
+
+    ObservableList<Object> argumentsProperty() {
+        argumentsProperty
     }
 
     @Override
     String get() {
-        messageSource.getMessage(code, args.toArray(), localeProperty.value)
+        messageSource.getMessage(this, localeProperty.value)
     }
 
     @Override
