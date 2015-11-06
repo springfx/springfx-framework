@@ -1,48 +1,48 @@
 package org.springfx.theater
 
-import javafx.scene.control.MenuBar
+import javafx.application.Platform
 import javafx.stage.Stage
 import org.springframework.boot.builder.SpringApplicationBuilder
 import org.springframework.context.ApplicationContext
 import org.springfx.boot.Application
+import org.springfx.theater.config.TheaterConfiguration
+import org.springfx.theater.scene.Scenario
+import org.springfx.theater.stage.Arrangement
 
 /**
  *
  * @author Stephan Grundner
+ * @since 1.0
  */
 abstract class Theater extends Application {
 
-    private MenuBar menuBar
+    private ApplicationContext applicationContext
+
+    protected ApplicationContext getApplicationContext() {
+        applicationContext
+    }
 
     @Override
     protected SpringApplicationBuilder createBuilder() {
-        super.createBuilder().showBanner(false).sources(TheaterConfiguration)
+        super.createBuilder().sources(TheaterConfiguration)
     }
 
-    protected MenuBar buildMenuBar() {
-        menuBar = new MenuBar()
-        menuBar.useSystemMenuBar = true
-        menuBar
+    protected Arrangement getPrimaryArrangement() {
+        applicationContext.getBean(Arrangement)
     }
 
-    MenuBar getMenuBar() {
-        menuBar
+    protected Scenario getPrimaryScenario() {
+        applicationContext.getBean(Scenario)
     }
 
-    abstract void start(Scenario primaryScenario)
-
-    private void initDataSource() {
-
+    protected void start(Arrangement arrangement) {
+        arrangement.perform(primaryScenario)
     }
 
     @Override
     final void start(Stage primaryStage, ApplicationContext applicationContext) {
-        menuBar = buildMenuBar()
-        def primaryScenario = applicationContext.getBean(Scenario)
-        assert primaryScenario != null, "primaryScenario must not be null"
-        start(primaryScenario)
-        if (!primaryStage.showing) {
-            primaryStage.show()
-        }
+        this.applicationContext = applicationContext
+        Platform.implicitExit = true
+        start(primaryArrangement)
     }
 }

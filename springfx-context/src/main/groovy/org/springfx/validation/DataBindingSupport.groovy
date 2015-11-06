@@ -3,6 +3,7 @@ package org.springfx.validation
 import javafx.beans.property.ObjectProperty
 import javafx.beans.property.ReadOnlyObjectProperty
 import javafx.beans.property.SimpleObjectProperty
+import org.springframework.context.ApplicationContext
 
 /**
  *
@@ -10,10 +11,16 @@ import javafx.beans.property.SimpleObjectProperty
  */
 trait DataBindingSupport {
 
-    protected final ObjectProperty<ControlDataBinder> dataBinder =
-            new SimpleObjectProperty<>(this, 'dataBinder', new ControlDataBinder(this))
+    protected ObjectProperty<ControlDataBinder> dataBinder
+
+
+    abstract private ApplicationContext getApplicationContext()
 
     ReadOnlyObjectProperty<ControlDataBinder> dataBinderProperty() {
+        if (dataBinder == null) {
+            dataBinder = new SimpleObjectProperty<>(this, 'dataBinder',
+                    new ControlDataBinder(applicationContext, this))
+        }
         dataBinder
     }
 

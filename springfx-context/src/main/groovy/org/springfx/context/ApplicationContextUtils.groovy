@@ -1,15 +1,13 @@
 package org.springfx.context
 
-import javafx.application.Application
-import javafx.stage.Stage
 import org.springframework.beans.BeanInstantiationException
+import org.springframework.beans.factory.BeanFactoryUtils
 import org.springframework.beans.factory.NoSuchBeanDefinitionException
 import org.springframework.beans.factory.NoUniqueBeanDefinitionException
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ConfigurableApplicationContext
-import org.springframework.context.MessageSource
-import org.springfx.context.i18n.LocalePropertyHolder
+import org.springfx.context.i18n.LocaleChangedEvent
 
 /**
  * Utilities for simplify usage of {@link ApplicationContext}.
@@ -19,39 +17,8 @@ import org.springfx.context.i18n.LocalePropertyHolder
  */
 final class ApplicationContextUtils {
 
-    /**
-     * Get the singleton instance for the current {@link Application}.
-     *
-     * @return The singleton instance for the current {@link Application}
-     */
-    static Application getApplication() {
-        def applicationContext = ApplicationContextHolder.context
-        (Application) getSingletonBean(applicationContext, ApplicationContextHolder.APPLICATION_BEAN_NAME)
-    }
-
-    /**
-     * Get the primary {@link Stage} instance for the current {@link Application}.
-     *
-     * @return The primary {@link Stage} instance for the current {@link Application}
-     */
-    static Stage getPrimaryStage() {
-        def applicationContext = ApplicationContextHolder.context
-        (Stage) getSingletonBean(applicationContext, ApplicationContextHolder.PRIMARY_STAGE_BEAN_NAME)
-    }
-
-    /**
-     * Get the singleton instance of {@link LocalePropertyHolder} for the current {@link Application}.
-     *
-     * @return The singleton instance of {@link LocalePropertyHolder} for the current {@link Application}
-     */
-    static LocalePropertyHolder getLocalePropertyHolder() {
-        def applicationContext = ApplicationContextHolder.context
-        (LocalePropertyHolder) getSingletonBean(applicationContext, LocalePropertyHolder)
-    }
-
-    static MessageSource getMessageSource() {
-        def applicationContext = ApplicationContextHolder.context
-        applicationContext.getBean(MessageSource)
+    static void notifyLocaleChanged(ApplicationContext applicationContext) {
+        applicationContext.publishEvent(new LocaleChangedEvent(applicationContext))
     }
 
     /**
@@ -63,7 +30,8 @@ final class ApplicationContextUtils {
      * @throws NoUniqueBeanDefinitionException
      */
     static String getUniqueBeanNameForType(ApplicationContext context, Class<?> type) throws NoUniqueBeanDefinitionException {
-        def beanNames = context.getBeanNamesForType(type)
+//        def beanNames = context.getBeanNamesForType(type)
+        def beanNames = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(context, type)
         if (beanNames.size() > 1) {
             throw new NoUniqueBeanDefinitionException(type, beanNames)
         }
@@ -151,13 +119,13 @@ final class ApplicationContextUtils {
         context.getBean(name, args)
     }
 
-    static def <T> T getPrototypeBean(ApplicationContext context, Class<T> type) throws BeanInstantiationException, NoUniqueBeanDefinitionException {
+    static def <T> T getPrototypeBean(ApplicationContext context, Class<T> type, Object... args) throws BeanInstantiationException, NoUniqueBeanDefinitionException {
         def beanName = getUniqueBeanNameForType(context, type)
-        (T) getPrototypeBean(context, beanName)
+        (T) getPrototypeBean(context, beanName, args)
     }
 
-    static boolean containsBean(ApplicationContext context, Class<?> type) {
-        context.getBeanNamesForType(type).length > 0
+    static def <T> T getPrototypeBean(ApplicationContext context, Class<T> type) throws BeanInstantiationException, NoUniqueBeanDefinitionException {
+        (T) getPrototypeBean(context, type, null)
     }
 
     static void autowireBeanProperties(ConfigurableApplicationContext context, Object existingBean, int autowireMode = AutowireCapableBeanFactory.AUTOWIRE_NO,  boolean dependencyCheck = false) {
@@ -173,7 +141,15 @@ final class ApplicationContextUtils {
         autowireBeanProperties(context, existingBean, AutowireCapableBeanFactory.AUTOWIRE_BY_TYPE, dependencyCheck)
     }
 
-    static void closeContext(ApplicationContext context) {
+    static boolean containsBeanDefinition(ApplicationContext applicationContext, Class<?> type) {
+        def beanName = getUniqueBeanNameForType(applicationContext, type)
+        if (beanName) {
+            applicationContext.containsBeanDefinition(beanName)
+        }
+        false
+    }
+
+    static void close(ApplicationContext context) {
         if (context instanceof ConfigurableApplicationContext) {
             context?.close()
         }

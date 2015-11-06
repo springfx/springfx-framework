@@ -35,7 +35,7 @@ class ApplicationContextHolder {
         strategy.bindContext(applicationContext, application, primaryStage)
     }
 
-    static ApplicationContext getContext() {
+    static ApplicationContext getApplicationContext() {
         strategy.getApplicationContext()
     }
 }

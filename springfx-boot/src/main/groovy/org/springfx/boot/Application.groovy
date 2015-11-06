@@ -54,6 +54,8 @@ abstract class Application extends javafx.application.Application implements App
     @Override
     final void stop() throws Exception {
         assert running
+        def applicationContext = ApplicationContextHolder.applicationContext
+        ApplicationContextUtils.close(applicationContext)
         running = false
     }
 }

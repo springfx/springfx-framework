@@ -29,6 +29,12 @@ class FormPaneSkin extends SkinBase<FormPane> {
         gridPane.styleClass.add('grid')
         skinnable.styleClass.setAll('form-pane')
 
+        gridPane.alignmentProperty().bind(skinnable.alignmentProperty())
+
+        def labelColumn = skinnable.labelColumnConstraints
+        def controlColumn = skinnable.controlColumnConstraints
+        gridPane.columnConstraints.addAll(labelColumn, controlColumn)
+
         def controls = skinnable.controls
         controls.addListener(new ListChangeListener<Node>() {
             @Override

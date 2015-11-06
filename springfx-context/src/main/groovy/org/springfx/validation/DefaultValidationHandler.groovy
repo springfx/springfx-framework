@@ -5,6 +5,8 @@ import com.sun.javafx.css.Stylesheet
 import javafx.application.Platform
 import javafx.beans.property.Property
 import javafx.scene.control.Control
+import org.springframework.context.ApplicationContext
+import org.springframework.context.ApplicationContextAware
 import org.springframework.validation.FieldError
 import org.springframework.validation.ObjectError
 import org.springfx.context.ApplicationContextHolder
@@ -20,6 +22,12 @@ class DefaultValidationHandler implements ValidationHandler {
 
     static final STYLESHEET_LOCATION = 'org/springfx/validation/errors.css'
     private static Stylesheet defaultErrorsStylesheet
+
+    final ApplicationContext applicationContext
+
+    DefaultValidationHandler(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext
+    }
 
     @Override
     void onGlobalError(ObjectError objectError) { }
@@ -44,9 +52,8 @@ class DefaultValidationHandler implements ValidationHandler {
             if (!(tooltip instanceof ErrorTooltip)) {
                 tooltip = new ErrorTooltip(tooltip)
             }
-            def context = ApplicationContextHolder.context
-            def locale = ApplicationContextUtils.localePropertyHolder.locale
-            def text = context.getMessage(fieldError, locale)
+            def locale = ApplicationContextUtils.getLocalePropertyHolder(applicationContext).locale
+            def text = applicationContext.getMessage(fieldError, locale)
             tooltip.text = text
             control.setTooltip(tooltip)
         }

@@ -1,11 +1,10 @@
 package org.springfx.control
 
-import javafx.beans.property.BooleanProperty
-import javafx.beans.property.SimpleBooleanProperty
-import javafx.beans.property.SimpleStringProperty
-import javafx.beans.property.StringProperty
+import javafx.beans.property.*
+import javafx.geometry.Pos
 import javafx.scene.control.Control
 import javafx.scene.control.Skin
+import org.springframework.context.ApplicationContext
 import org.springfx.control.skin.DataSourcePaneSkin
 import org.springfx.validation.DataBindingSupport
 
@@ -15,10 +14,30 @@ import org.springfx.validation.DataBindingSupport
  */
 class DataSourcePane extends Control implements DataBindingSupport {
 
+    private final ApplicationContext applicationContext
+
+    private final ObjectProperty<Pos> alignment = new SimpleObjectProperty<>(this, 'alignment')
     private final StringProperty url = new SimpleStringProperty(this, 'url')
     private final StringProperty username = new SimpleStringProperty(this, 'username')
     private final StringProperty password = new SimpleStringProperty(this, 'password')
     private final BooleanProperty remember = new SimpleBooleanProperty(this, 'remember')
+
+    DataSourcePane(ApplicationContext applicationContext) {
+        assert applicationContext != null
+        this.applicationContext = applicationContext
+    }
+
+    ObjectProperty<Pos> alignmentProperty() {
+        alignment
+    }
+
+    Pos getAlignment() {
+        alignmentProperty().get()
+    }
+
+    void setAlignment(Pos alignment) {
+        alignmentProperty().set(alignment)
+    }
 
     StringProperty urlProperty() {
         url
@@ -70,6 +89,6 @@ class DataSourcePane extends Control implements DataBindingSupport {
 
     @Override
     protected Skin<?> createDefaultSkin() {
-        new DataSourcePaneSkin(this)
+        new DataSourcePaneSkin(this, applicationContext)
     }
 }

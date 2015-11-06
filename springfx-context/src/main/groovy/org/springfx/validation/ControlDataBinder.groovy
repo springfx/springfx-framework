@@ -4,6 +4,7 @@ import javafx.beans.property.Property
 import javafx.scene.control.Control
 import javafx.scene.control.TextField
 import org.springframework.beans.PropertyValues
+import org.springframework.context.ApplicationContext
 import org.springframework.validation.BindingResult
 import org.springframework.validation.DataBinder
 import org.springframework.validation.FieldError
@@ -24,21 +25,21 @@ class ControlDataBinder extends DataBinder {
         DIRECT_FIELD_ACCESS
     }
 
+    private final ApplicationContext applicationContext
+
     private final Map<String, Property<?>> propertyByField = [:]
     private final Set<ValidationHandler> validationHandlers = new HashSet<>()
 
     private AccessType accessType
 
-    ControlDataBinder(Object target, ValidationHandler validationHandler) {
+    ControlDataBinder(ApplicationContext applicationContext, Object target, ValidationHandler validationHandler) {
         super(target)
+        this.applicationContext = applicationContext
         this.validationHandler = validationHandler
     }
 
-    ControlDataBinder(Object target) {
-        super(target)
-        def applicationContext = ApplicationContextHolder.getContext()
-        validationHandler = ApplicationContextUtils.getBeanOrInstance(
-                applicationContext, ValidationHandler, DefaultValidationHandler)
+    ControlDataBinder(ApplicationContext applicationContext, Object target) {
+        this(applicationContext, target, new DefaultValidationHandler(applicationContext))
     }
 
     @Override

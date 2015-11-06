@@ -9,42 +9,45 @@ import javafx.beans.value.ChangeListener
 import javafx.beans.value.ObservableValue
 import javafx.collections.ListChangeListener
 import javafx.collections.ObservableList
+import org.springframework.context.ApplicationContext
+import org.springframework.context.ApplicationListener
+import org.springframework.context.ConfigurableApplicationContext
 import org.springframework.context.MessageSource
 import org.springframework.context.MessageSourceResolvable
+import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.util.StringUtils
+import org.springfx.context.i18n.LocaleChangedEvent
 import org.springfx.context.i18n.LocalePropertyHolder
 
 /**
+ * Message property
  *
+ * @see {@link ApplicationContextUtils#notifyLocaleChanged(org.springframework.context.ApplicationContext)}
+ * @see {@link LocaleChangedEvent}
  * @author Stephan Grundner
+ * @since 1.0
  */
-class MessageProperty extends ReadOnlyStringProperty implements MessageSourceResolvable {
+class MessageProperty extends ReadOnlyStringProperty implements MessageSourceResolvable, ApplicationListener<LocaleChangedEvent> {
 
     final MessageSource messageSource
     final String code
     final String defaultMessage
+    final Locale locale
 
-    private final ReadOnlyProperty<Locale> localeProperty
     private final ObservableList<Object> argumentsProperty = new ObservableListWrapper<>([])
 
     ExpressionHelper<String> helper
 
-    MessageProperty(String code, Object[] arguments, String defaultMessage, MessageSource messageSource, ReadOnlyProperty<Locale> localeProperty) {
+    MessageProperty(String code, Object[] arguments, String defaultMessage, Locale locale, MessageSource messageSource) {
         assert !StringUtils.isEmpty(code)
         this.code = code
         this.arguments = arguments
         this.defaultMessage = defaultMessage
+        this.locale = locale
 
         assert messageSource != null
         this.messageSource = messageSource
-        this.localeProperty = localeProperty
 
-        localeProperty.addListener(new ChangeListener<Locale>() {
-            @Override
-            void changed(ObservableValue<? extends Locale> observable, Locale oldValue, Locale newValue) {
-                fireValueChangedEvent()
-            }
-        })
         argumentsProperty.addListener(new ListChangeListener<Object>() {
             @Override
             void onChanged(ListChangeListener.Change<?> change) {
@@ -53,16 +56,13 @@ class MessageProperty extends ReadOnlyStringProperty implements MessageSourceRes
         })
     }
 
-    MessageProperty(String code, Object[] arguments, String defaultMessage, MessageSource messageSource, LocalePropertyHolder localePropertyHolder) {
-        this(code, arguments, defaultMessage, messageSource, localePropertyHolder.localeProperty())
-    }
-
-    MessageProperty(String code, Object[] arguments, String defaultMessage, LocalePropertyHolder localePropertyHolder) {
-        this(code, arguments, defaultMessage, ApplicationContextUtils.messageSource, localePropertyHolder)
+    MessageProperty(String code, Object[] arguments, String defaultMessage, ApplicationContext applicationContext) {
+        this(code, arguments, defaultMessage, null, (MessageSource) applicationContext)
+        ((ConfigurableApplicationContext) applicationContext).addApplicationListener(this)
     }
 
     MessageProperty(String code, Object[] arguments, String defaultMessage) {
-        this(code, arguments, defaultMessage, ApplicationContextUtils.localePropertyHolder)
+        this(code, arguments, defaultMessage, ApplicationContextHolder.applicationContext)
     }
 
     MessageProperty(String code, Object[] arguments) {
@@ -96,7 +96,7 @@ class MessageProperty extends ReadOnlyStringProperty implements MessageSourceRes
 
     @Override
     String get() {
-        messageSource.getMessage(this, localeProperty.value)
+        messageSource.getMessage(this, locale ?: LocaleContextHolder.locale)
     }
 
     @Override
@@ -135,4 +135,9 @@ class MessageProperty extends ReadOnlyStringProperty implements MessageSourceRes
 
     @Override
     String getName() { code }
+
+    @Override
+    void onApplicationEvent(LocaleChangedEvent event) {
+        fireValueChangedEvent()
+    }
 }

@@ -3,14 +3,19 @@ package org.springfx.control
 import javafx.beans.InvalidationListener
 import javafx.beans.Observable
 import javafx.beans.property.IntegerProperty
+import javafx.beans.property.ObjectProperty
 import javafx.beans.property.SimpleIntegerProperty
+import javafx.beans.property.SimpleObjectProperty
 import javafx.collections.FXCollections
 import javafx.collections.ListChangeListener
 import javafx.collections.ObservableList
+import javafx.geometry.Pos
 import javafx.scene.Node
 import javafx.scene.control.Control
 import javafx.scene.control.Labeled
 import javafx.scene.control.Skin
+import javafx.scene.layout.ColumnConstraints
+import javafx.scene.layout.Priority
 import org.springfx.control.skin.FormPaneSkin
 
 /**
@@ -50,6 +55,7 @@ class FormPane extends Control {
         private final IntegerProperty rowIndex = new SimpleIntegerProperty(this, 'rowIndex')
         private final IntegerProperty colspan = new SimpleIntegerProperty(this, 'colspan')
         private final IntegerProperty rowspan = new SimpleIntegerProperty(this, 'rowspan')
+        private final IntegerProperty columnPercentWidth = new SimpleIntegerProperty(this, 'columnPercentWidth')
 
         Constraints(int columnIndex, int rowIndex, int colspan, int rowspan) {
             columnIndexProperty().set(columnIndex)
@@ -153,6 +159,63 @@ class FormPane extends Control {
                 }
             }
         })
+    }
+
+//    Properties:
+
+    private final ObjectProperty<Pos> alignment = new SimpleObjectProperty<>(this, 'alignment')
+
+    ObjectProperty<Pos> alignmentProperty() {
+        alignment
+    }
+
+    Pos getAlignment() {
+        alignmentProperty().get()
+    }
+
+    void setAlignment(Pos alignment) {
+        alignmentProperty().set(alignment)
+    }
+
+    private final ObjectProperty<ColumnConstraints> labelColumnConstraints =
+            new SimpleObjectProperty<>(this, 'labelColumnConstraints')
+
+    ObjectProperty<ColumnConstraints> labelColumnConstraintsProperty() {
+        labelColumnConstraints
+    }
+
+    ColumnConstraints getLabelColumnConstraints() {
+        def labelColumnConstraints = labelColumnConstraintsProperty().get()
+        if (labelColumnConstraints == null) {
+            labelColumnConstraints = new ColumnConstraints()
+            setLabelColumnConstraints(labelColumnConstraints)
+        }
+        labelColumnConstraints
+    }
+
+    void setLabelColumnConstraints(ColumnConstraints labelColumnConstraints) {
+        labelColumnConstraintsProperty().set(labelColumnConstraints)
+    }
+
+    private final ObjectProperty<ColumnConstraints> controlColumnConstraints =
+            new SimpleObjectProperty<>(this, 'controlColumnConstraints')
+
+    ObjectProperty<ColumnConstraints> controlColumnConstraintsProperty() {
+        controlColumnConstraints
+    }
+
+    ColumnConstraints getControlColumnConstraints() {
+        def controlColumnConstraints = controlColumnConstraintsProperty().get()
+        if (controlColumnConstraints == null) {
+            controlColumnConstraints = new ColumnConstraints()
+            controlColumnConstraints.hgrow = Priority.SOMETIMES
+            setControlColumnConstraints(controlColumnConstraints)
+        }
+        controlColumnConstraints
+    }
+
+    void setControlColumnConstraints(ColumnConstraints controlColumnConstraints) {
+        controlColumnConstraintsProperty().set(controlColumnConstraints)
     }
 
     @Override

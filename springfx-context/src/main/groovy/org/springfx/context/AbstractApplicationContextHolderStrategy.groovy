@@ -2,8 +2,6 @@ package org.springfx.context
 
 import javafx.application.Application
 import javafx.application.Platform
-import javafx.beans.value.ChangeListener
-import javafx.beans.value.ObservableValue
 import javafx.stage.Stage
 import org.springframework.beans.BeansException
 import org.springframework.beans.factory.config.BeanDefinition
@@ -16,8 +14,6 @@ import org.springframework.beans.factory.support.BeanDefinitionReaderUtils
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ConfigurableApplicationContext
-import org.springframework.context.i18n.LocaleContextHolder
-import org.springfx.context.i18n.LocalePropertyHolder
 import org.springfx.fxml.FXMLLoaderFactory
 
 /**
@@ -46,23 +42,6 @@ abstract class AbstractApplicationContextHolderStrategy implements ApplicationCo
      */
     protected void registerPrimaryStageSingleton(SingletonBeanRegistry beanRegistry, Stage primaryStage) {
         beanRegistry.registerSingleton(ApplicationContextHolder.PRIMARY_STAGE_BEAN_NAME, primaryStage)
-    }
-
-    /**
-     * Register a bean definition for the {@link LocalePropertyHolder} class.
-     *
-     * @param beanDefinitionRegistry The bean definition registry
-     */
-    protected void registerLocalePropertyHolder(BeanDefinitionRegistry beanDefinitionRegistry) {
-        def builder = BeanDefinitionBuilder
-                .genericBeanDefinition(LocalePropertyHolder)
-                .setScope(BeanDefinition.SCOPE_SINGLETON)
-                .setLazyInit(true)
-                .setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_TYPE)
-        def beanDefinition = builder.beanDefinition
-        beanDefinition.primary = true
-        def name = BeanDefinitionReaderUtils.generateBeanName(beanDefinition, beanDefinitionRegistry)
-        beanDefinitionRegistry.registerBeanDefinition(name, builder.beanDefinition)
     }
 
     /**
@@ -95,19 +74,7 @@ abstract class AbstractApplicationContextHolderStrategy implements ApplicationCo
             void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
                 registerApplicationSingleton(beanFactory, application)
                 registerPrimaryStageSingleton(beanFactory, primaryStage)
-                registerLocalePropertyHolder((BeanDefinitionRegistry) beanFactory)
                 registerFXMLLoader((BeanDefinitionRegistry) beanFactory)
-
-                def localePropertyHolder = beanFactory.getBean(LocalePropertyHolder)
-                def localeProperty = localePropertyHolder.localeProperty()
-                if (localeProperty) {
-                    localeProperty.addListener(new ChangeListener<Locale>() {
-                        @Override
-                        void changed(ObservableValue<? extends Locale> observable, Locale oldValue, Locale newValue) {
-                            LocaleContextHolder.locale = newValue
-                        }
-                    })
-                }
             }
         })
 
