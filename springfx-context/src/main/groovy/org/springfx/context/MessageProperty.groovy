@@ -3,13 +3,10 @@ package org.springfx.context
 import com.sun.javafx.binding.ExpressionHelper
 import com.sun.javafx.collections.ObservableListWrapper
 import javafx.beans.InvalidationListener
-import javafx.beans.property.ReadOnlyProperty
 import javafx.beans.property.ReadOnlyStringProperty
 import javafx.beans.value.ChangeListener
-import javafx.beans.value.ObservableValue
 import javafx.collections.ListChangeListener
 import javafx.collections.ObservableList
-import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationListener
 import org.springframework.context.ConfigurableApplicationContext
 import org.springframework.context.MessageSource
@@ -17,7 +14,6 @@ import org.springframework.context.MessageSourceResolvable
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.util.StringUtils
 import org.springfx.context.i18n.LocaleChangedEvent
-import org.springfx.context.i18n.LocalePropertyHolder
 
 /**
  * Message property
@@ -48,6 +44,8 @@ class MessageProperty extends ReadOnlyStringProperty implements MessageSourceRes
         assert messageSource != null
         this.messageSource = messageSource
 
+        listenToLocaleChangedEvent()
+
         argumentsProperty.addListener(new ListChangeListener<Object>() {
             @Override
             void onChanged(ListChangeListener.Change<?> change) {
@@ -56,21 +54,21 @@ class MessageProperty extends ReadOnlyStringProperty implements MessageSourceRes
         })
     }
 
-    MessageProperty(String code, Object[] arguments, String defaultMessage, ApplicationContext applicationContext) {
-        this(code, arguments, defaultMessage, null, (MessageSource) applicationContext)
-        ((ConfigurableApplicationContext) applicationContext).addApplicationListener(this)
+    MessageProperty(String code, Object[] arguments, String defaultMessage, MessageSource messageSource) {
+        this(code, arguments, defaultMessage, null, messageSource)
     }
 
-    MessageProperty(String code, Object[] arguments, String defaultMessage) {
-        this(code, arguments, defaultMessage, ApplicationContextHolder.applicationContext)
+    MessageProperty(String code, Object[] arguments, MessageSource messageSource) {
+        this(code, arguments, null, messageSource)
     }
 
-    MessageProperty(String code, Object[] arguments) {
-        this(code, arguments, (String) null)
+    MessageProperty(String code, MessageSource messageSource) {
+        this(code, null, messageSource)
     }
 
-    MessageProperty(String code) {
-        this(code, (String) null)
+    private void listenToLocaleChangedEvent() {
+        ((ConfigurableApplicationContext) ApplicationContextHolder.applicationContext)
+                .addApplicationListener(this)
     }
 
     @Override

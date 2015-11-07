@@ -3,6 +3,5 @@ include 'springfx-context'
 include 'springfx-controls'
 include 'springfx-iconfonts'
 include 'springfx-boot'
-include 'springfx-theater'
 include 'jovido'
 
