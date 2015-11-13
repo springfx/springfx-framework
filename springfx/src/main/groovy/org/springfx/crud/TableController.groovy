@@ -5,7 +5,7 @@ import javafx.event.EventHandler
 import javafx.scene.control.Button
 import org.springfx.command.CommandFactory
 import org.springfx.command.CreateItemCommand
-import org.springfx.crud.scene.ListingProjection
+import org.springfx.crud.scene.SimpleTableProjection
 import org.springfx.model.ListingModel
 import org.springfx.model.ObjectListingModel
 
@@ -13,23 +13,23 @@ import org.springfx.model.ObjectListingModel
  *
  * @author Stephan Grundner
  */
-class SimpleListingController<T, P extends ListingProjection<T, ?>> implements ListingController<T, P> {
+class TableController<T, P extends SimpleTableProjection<T>> {
 
     final ListingModel model
     final P projection
 
     protected CommandFactory commandFactory
 
-    SimpleListingController(P projection, CommandFactory commandFactory, ListingModel model) {
+    TableController(P projection, CommandFactory commandFactory, ListingModel model) {
         this.projection = projection
         this.model = model
         this.commandFactory = commandFactory
     }
 
-    SimpleListingController(P projection, CommandFactory commandFactory) {
+    TableController(P projection, CommandFactory commandFactory) {
         this(projection, commandFactory, new ObjectListingModel())
 
-        def createButton = projection.getProjectionSource(ListingProjection.CREATE_BUTTON_SOURCE)
+        def createButton = projection.getProjectionSource('create-button')
         if (createButton instanceof Button) {
             createButton.onAction = new EventHandler<ActionEvent>() {
                 @Override
