@@ -1,4 +1,0 @@
-rootProject.name = 'springfx-framework'
-include 'springfx'
-include 'libmori'
-
