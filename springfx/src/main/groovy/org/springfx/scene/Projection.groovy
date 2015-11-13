@@ -1,7 +1,7 @@
 package org.springfx.scene
 
 /**
- * A view.
+ * A projection.
  *
  * @author Stephan Grundner
  * @since 1.0

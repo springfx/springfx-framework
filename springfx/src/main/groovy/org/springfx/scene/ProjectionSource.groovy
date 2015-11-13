@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy
 import java.lang.annotation.Target
 
 /**
- * Projection area.
+ * Marks projection sources.
  *
  * @author Stephan Grundner
  * @since 1.0
