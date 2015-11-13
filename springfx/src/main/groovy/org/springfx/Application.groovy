@@ -23,7 +23,7 @@ class Application extends javafx.application.Application {
     }
 
     @Autowired
-    ProjectionService viewService
+    ProjectionService projectionService
 
     @Override
     void init() throws Exception {
@@ -41,7 +41,7 @@ class Application extends javafx.application.Application {
 
         ApplicationContextUtils.autowireBeanPropertiesByType(applicationContext, this)
 
-        viewService.show(Projection)
+        projectionService.show(Projection)
     }
 
     @Override
