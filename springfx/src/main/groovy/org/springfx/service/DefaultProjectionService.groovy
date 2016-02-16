@@ -1,9 +1,8 @@
 package org.springfx.service
 
 import org.springframework.beans.factory.BeanFactory
-import org.springframework.context.ApplicationEventPublisher
-import org.springframework.context.ApplicationEventPublisherAware
-import org.springfx.event.ProjectionShowingEvent
+import org.springframework.beans.factory.ListableBeanFactory
+import org.springfx.context.ApplicationContextUtils
 import org.springfx.scene.Projection
 import org.springfx.stage.Projector
 
@@ -12,47 +11,53 @@ import org.springfx.stage.Projector
  * @author Stephan Grundner
  * @since 1.0
  */
-class DefaultProjectionService implements ProjectionService, ApplicationEventPublisherAware {
+class DefaultProjectionService implements ProjectionService {
 
-    ApplicationEventPublisher applicationEventPublisher
-
-    BeanFactory beanFactory
+    ListableBeanFactory beanFactory
     Projector projector
 
     final Map<String, Projection> projections = [:]
 
-    DefaultProjectionService(BeanFactory beanFactory, Projector projector) {
+    DefaultProjectionService(ListableBeanFactory beanFactory, Projector projector) {
         this.beanFactory = beanFactory
         this.projector = projector
     }
 
-    void show(Projection projection) {
-        projector.show(projection)
-
-        applicationEventPublisher.publishEvent(new ProjectionShowingEvent(
-                applicationEventPublisher, projection))
+    DefaultProjectionService(ListableBeanFactory beanFactory) {
+        this.beanFactory = beanFactory
+        projector = ApplicationContextUtils.getBeanOrInstance(beanFactory, )
     }
 
-    final String buildUniqueKey(Class<? extends Projection> projectionClass, Object key) {
-        "${projectionClass.name}#$key"
+    void show(Projection projection) {
+        projector.show(projection)
     }
 
     @Override
-    void show(Class<? extends Projection> projectionClass, Object key) {
-        def uniqueKey = buildUniqueKey(projectionClass, key)
-        def projection = projections.get(uniqueKey)
-        if (projection) {
-            show(projection)
-        } else {
-            projection = beanFactory.getBean(projectionClass)
-            projections.put(uniqueKey, projection)
-            show(projection)
+    void show(String beanName, Object id) {
+        def key = id ? "$beanName#$id" : beanName
+        def projection = projections.get(key)
+        if (projection == null) {
+            projection = beanFactory.getBean(beanName) as Projection
+            projections.put(key, projection)
         }
+
+        show(projection)
+    }
+
+    @Override
+    void show(String beanName) {
+        show(beanName, null)
+    }
+
+    @Override
+    void show(Class<? extends Projection> projectionClass, Object id) {
+        def beanName = ApplicationContextUtils.getUniqueBeanNameForType(
+                beanFactory, projectionClass)
+        show(beanName, id)
     }
 
     @Override
     void show(Class<? extends Projection> projectionClass) {
-        show(projectionClass, 0)
+        show(projectionClass, null)
     }
-
 }

@@ -1,7 +1,9 @@
 package org.springfx.context
 
 import org.springframework.beans.BeanInstantiationException
+import org.springframework.beans.factory.BeanFactory
 import org.springframework.beans.factory.BeanFactoryUtils
+import org.springframework.beans.factory.ListableBeanFactory
 import org.springframework.beans.factory.NoSuchBeanDefinitionException
 import org.springframework.beans.factory.NoUniqueBeanDefinitionException
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory
@@ -29,9 +31,9 @@ final class ApplicationContextUtils {
      * @return The unique bean name for the specified type or null
      * @throws NoUniqueBeanDefinitionException
      */
-    static String getUniqueBeanNameForType(ApplicationContext context, Class<?> type) throws NoUniqueBeanDefinitionException {
+    static String getUniqueBeanNameForType(ListableBeanFactory beanFactory, Class<?> type) throws NoUniqueBeanDefinitionException {
 //        def beanNames = context.getBeanNamesForType(type)
-        def beanNames = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(context, type)
+        def beanNames = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, type)
         if (beanNames.size() > 1) {
             throw new NoUniqueBeanDefinitionException(type, beanNames)
         }
@@ -49,7 +51,7 @@ final class ApplicationContextUtils {
      * @throws BeanInstantiationException
      * @throws NoUniqueBeanDefinitionException
      */
-    static def <T> T getBeanOrInstance(ApplicationContext context, String name, Class<? extends T> fallbackType, Object... args) throws BeanInstantiationException, NoUniqueBeanDefinitionException {
+    static def <T> T getBeanOrInstance(BeanFactory context, String name, Class<? extends T> fallbackType, Object... args) throws BeanInstantiationException, NoUniqueBeanDefinitionException {
         T instance
         if (name?.size() > 0 && context.containsBean(name)) {
             if (args?.length > 0) {
@@ -72,7 +74,7 @@ final class ApplicationContextUtils {
      * @throws BeanInstantiationException
      * @throws NoUniqueBeanDefinitionException
      */
-    static def <T> T getBeanOrInstance(ApplicationContext context, Class<T> beanType, Object... args) throws NoSuchBeanDefinitionException {
+    static def <T> T getBeanOrInstance(ListableBeanFactory context, Class<T> beanType, Object... args) throws NoSuchBeanDefinitionException {
         def beanNames = context.getBeanNamesForType(beanType)
         if (beanNames.length > 0) {
             if (beanNames.length == 1) {
@@ -93,7 +95,7 @@ final class ApplicationContextUtils {
      * @throws BeanInstantiationException
      * @throws NoUniqueBeanDefinitionException
      */
-    static def <T> T getBeanOrInstance(ApplicationContext context, Class<T> type, Class<? extends T> fallbackType, Object... args) throws BeanInstantiationException, NoUniqueBeanDefinitionException {
+    static def <T> T getBeanOrInstance(ListableBeanFactory context, Class<T> type, Class<? extends T> fallbackType, Object... args) throws BeanInstantiationException, NoUniqueBeanDefinitionException {
         def beanName = getUniqueBeanNameForType(context, type)
         getBeanOrInstance(context, (String) beanName, fallbackType, args)
     }
@@ -141,10 +143,10 @@ final class ApplicationContextUtils {
         autowireBeanProperties(context, existingBean, AutowireCapableBeanFactory.AUTOWIRE_BY_TYPE, dependencyCheck)
     }
 
-    static boolean containsBeanDefinition(ApplicationContext applicationContext, Class<?> type) {
-        def beanName = getUniqueBeanNameForType(applicationContext, type)
+    static boolean containsBeanDefinition(ListableBeanFactory beanFactory, Class<?> type) {
+        def beanName = getUniqueBeanNameForType(beanFactory, type)
         if (beanName) {
-            applicationContext.containsBeanDefinition(beanName)
+            beanFactory.containsBeanDefinition(beanName)
         }
         false
     }

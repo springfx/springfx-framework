@@ -18,7 +18,8 @@ class Launcher {
     private Class<? extends Application> applicationClass = Application
 
     protected final Set<Class<?>> sources = new LinkedHashSet<>()
-    protected boolean usingProjections
+    protected boolean projections
+    protected boolean implicitExit
     protected Banner.Mode bannerMode
 
     Launcher(Class<?> source) {
@@ -46,8 +47,14 @@ class Launcher {
      * @see {@link org.springfx.scene.Projection}
      * @param usingProjections True if application should use projections, otherwise false
      */
-    Launcher usingProjections(boolean usingProjections) {
-        this.usingProjections = usingProjections
+    Launcher projections(boolean projections) {
+        this.projections = projections
+
+        this
+    }
+
+    Launcher implicitExit(boolean implicitExit) {
+        this.implicitExit = implicitExit
 
         this
     }

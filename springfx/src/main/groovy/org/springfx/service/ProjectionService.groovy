@@ -11,6 +11,9 @@ interface ProjectionService {
 
     Projector getProjector()
 
-    void show(Class<? extends Projection> projectionClass, Object key)
+    void show(String beanName, Object id)
+    void show(String beanName)
+
+    void show(Class<? extends Projection> projectionClass, Object id)
     void show(Class<? extends Projection> projectionClass)
 }
