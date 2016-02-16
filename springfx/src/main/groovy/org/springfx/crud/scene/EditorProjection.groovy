@@ -1,6 +1,6 @@
 package org.springfx.crud.scene
 
-import javafx.scene.Node
+import org.springfx.control.FormPane
 import org.springfx.scene.Projection
 
 /**
@@ -9,5 +9,5 @@ import org.springfx.scene.Projection
  */
 interface EditorProjection extends Projection {
 
-    Node getEditor()
+    FormPane getForm()
 }

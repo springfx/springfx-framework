@@ -1,6 +1,9 @@
 package org.springfx.service
 
 import org.springframework.beans.factory.BeanFactory
+import org.springframework.context.ApplicationEventPublisher
+import org.springframework.context.ApplicationEventPublisherAware
+import org.springfx.event.ProjectionShowingEvent
 import org.springfx.scene.Projection
 import org.springfx.stage.Projector
 
@@ -9,10 +12,14 @@ import org.springfx.stage.Projector
  * @author Stephan Grundner
  * @since 1.0
  */
-class DefaultProjectionService implements ProjectionService {
+class DefaultProjectionService implements ProjectionService, ApplicationEventPublisherAware {
+
+    ApplicationEventPublisher applicationEventPublisher
 
     BeanFactory beanFactory
     Projector projector
+
+    final Map<String, Projection> projections = [:]
 
     DefaultProjectionService(BeanFactory beanFactory, Projector projector) {
         this.beanFactory = beanFactory
@@ -21,11 +28,31 @@ class DefaultProjectionService implements ProjectionService {
 
     void show(Projection projection) {
         projector.show(projection)
+
+        applicationEventPublisher.publishEvent(new ProjectionShowingEvent(
+                applicationEventPublisher, projection))
+    }
+
+    final String buildUniqueKey(Class<? extends Projection> projectionClass, Object key) {
+        "${projectionClass.name}#$key"
+    }
+
+    @Override
+    void show(Class<? extends Projection> projectionClass, Object key) {
+        def uniqueKey = buildUniqueKey(projectionClass, key)
+        def projection = projections.get(uniqueKey)
+        if (projection) {
+            show(projection)
+        } else {
+            projection = beanFactory.getBean(projectionClass)
+            projections.put(uniqueKey, projection)
+            show(projection)
+        }
     }
 
     @Override
     void show(Class<? extends Projection> projectionClass) {
-        def projection = beanFactory.getBean(projectionClass)
-        show(projection)
+        show(projectionClass, 0)
     }
+
 }

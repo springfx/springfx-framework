@@ -2,7 +2,10 @@ package org.springfx.scene
 
 import javafx.scene.Node
 
+import java.beans.BeanDescriptor
 import java.beans.Introspector
+import java.beans.PropertyDescriptor
+import java.lang.annotation.Annotation
 import java.lang.reflect.Method
 
 /**
@@ -16,6 +19,28 @@ class AnnotationConfigProjectionAdapter implements Projection {
 
     Map<String, Method> readMethods = [:]
 
+    void registerMethod(String[] keys, Method m) {
+        keys.each { key ->
+            readMethods.put(key, m)
+        }
+    }
+
+    private def <T extends Annotation> T getAnnotationForProperty(Class<T> annotationClass, BeanDescriptor beanDescriptor, PropertyDescriptor propertyDescriptor) {
+        def method = propertyDescriptor.readMethod
+        def annotation = method.getAnnotation(annotationClass)
+        if (annotation == null) {
+            def beanClass = beanDescriptor.getBeanClass()
+            try {
+                def field = beanClass.getDeclaredField(propertyDescriptor.name)
+                if (field) {
+                    annotation = field.getAnnotation(annotationClass)
+                    return annotation
+                }
+            } catch (NoSuchFieldException e) {}
+        }
+        annotation
+    }
+
     AnnotationConfigProjectionAdapter(Object projection) {
         this.projection = projection
 
@@ -25,8 +50,11 @@ class AnnotationConfigProjectionAdapter implements Projection {
             def m = pd.readMethod
             def a = m.getAnnotation(ProjectionSource)
             if (a) {
-                a.value().each { key ->
-                    readMethods.put(key, m)
+                registerMethod(a.value(), m)
+            } else {
+                a = getAnnotationForProperty(ProjectionSource, beanInfo.beanDescriptor, pd)
+                if (a) {
+                    registerMethod(a.value(), m)
                 }
             }
         }

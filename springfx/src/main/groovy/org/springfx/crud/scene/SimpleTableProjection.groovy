@@ -9,13 +9,14 @@ import org.springfx.scene.ProjectionSource
 /**
  *
  * @author Stephan Grundner
+ * @since 1.0
  */
-class SimpleTableProjection<T> implements Projection {
+class SimpleTableProjection<T> implements TableProjection<T> {
 
     TableView<T> table
     Button blaaa
 
-    Projection adapter
+    final Projection adapter
 
     SimpleTableProjection() {
         adapter = new AnnotationConfigProjectionAdapter(this)

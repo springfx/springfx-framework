@@ -4,30 +4,29 @@ import javafx.event.ActionEvent
 import javafx.event.EventHandler
 import javafx.scene.control.Button
 import org.springfx.command.CommandFactory
-import org.springfx.command.CreateItemCommand
-import org.springfx.crud.scene.SimpleTableProjection
-import org.springfx.model.ListingModel
+import org.springfx.crud.command.CreateCommand
+import org.springfx.crud.scene.TableProjection
+import org.springfx.model.ListModel
 import org.springfx.model.ObjectListingModel
 
 /**
  *
  * @author Stephan Grundner
  */
-class TableController<T, P extends SimpleTableProjection<T>> {
+class TableController<T, P extends TableProjection<T>> {
 
-    final ListingModel model
+    final CommandFactory commandFactory
     final P projection
+    final ListModel model
 
-    protected CommandFactory commandFactory
-
-    TableController(P projection, CommandFactory commandFactory, ListingModel model) {
+    TableController(CommandFactory commandFactory, P projection, ListModel model) {
+        this.commandFactory = commandFactory
         this.projection = projection
         this.model = model
-        this.commandFactory = commandFactory
     }
 
-    TableController(P projection, CommandFactory commandFactory) {
-        this(projection, commandFactory, new ObjectListingModel())
+    TableController(CommandFactory commandFactory, P projection) {
+        this(commandFactory, projection, new ObjectListingModel())
 
         def createButton = projection.getProjectionSource('create-button')
         if (createButton instanceof Button) {
@@ -41,7 +40,6 @@ class TableController<T, P extends SimpleTableProjection<T>> {
     }
 
     void create() {
-        def command = commandFactory.getCommand(CreateItemCommand)
-        command.execute()
+        commandFactory.getCommand(CreateCommand).execute()
     }
 }

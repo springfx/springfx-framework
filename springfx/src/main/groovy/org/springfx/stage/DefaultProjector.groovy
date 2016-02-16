@@ -2,11 +2,13 @@ package org.springfx.stage
 
 import javafx.scene.Node
 import javafx.scene.Scene
-import javafx.scene.control.Button
+import javafx.scene.control.ButtonBase
+import javafx.scene.control.Tab
+import javafx.scene.control.TabPane
 import javafx.scene.control.ToolBar
 import javafx.scene.layout.BorderPane
 import javafx.stage.Stage
-import org.springfx.crud.scene.ListingProjection
+import org.springfx.beans.property.PropertyUtils
 import org.springfx.scene.Projection
 
 /**
@@ -19,6 +21,7 @@ class DefaultProjector implements Projector {
 
     ToolBar toolBar
     BorderPane borderPane
+    TabPane tabPane
 
     DefaultProjector(Stage stage) {
         this.stage = stage
@@ -27,18 +30,23 @@ class DefaultProjector implements Projector {
     void show(Projection projection) {
         if (borderPane == null) {
             borderPane = new BorderPane()
+            tabPane = new TabPane()
+            def selectionModel = tabPane.selectionModel
+            PropertyUtils.onChange(selectionModel.selectedItemProperty(), this.&tabSelected)
+            borderPane.center = tabPane
             toolBar = new ToolBar()
             borderPane.top = toolBar
         }
 
-        def primarySource = projection.getProjectionSource(Projection.PRIMARY_SOURCE)
-        if (primarySource instanceof Node) {
-            borderPane.center = (Node) primarySource
-        }
-
-        def createButton = projection.getProjectionSource(ListingProjection.CREATE_BUTTON_SOURCE)
-        if (createButton instanceof Button) {
-            toolBar.items.add(0, createButton)
+        def tabs = tabPane.tabs
+        def tab = tabs.find { it.content == projection }
+        if (tab == null) {
+            tab = new Tab(projection.toString())
+            tab.closable = false
+            tab.properties.put(Projection.name, projection)
+            tabs.add(tab)
+        } else {
+            tabPane.selectionModel.select(tab)
         }
 
         def scene = stage.scene
@@ -51,6 +59,21 @@ class DefaultProjector implements Projector {
 
         if (!stage.showing) {
             stage.show()
+        }
+    }
+
+    void tabSelected(Tab tab) {
+        toolBar.items.clear()
+
+        def projection = tab.properties.get(Projection.name) as Projection
+        def primarySource = projection.getProjectionSource(Projection.PRIMARY_SOURCE)
+        if (primarySource instanceof Node) {
+            tab.content = (Node) primarySource
+        }
+
+        def createButton = projection.getProjectionSource('create-button')
+        if (createButton instanceof ButtonBase) {
+            toolBar.items.add(createButton)
         }
     }
 }

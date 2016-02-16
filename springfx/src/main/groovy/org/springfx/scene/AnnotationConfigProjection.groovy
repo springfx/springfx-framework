@@ -5,7 +5,7 @@ package org.springfx.scene
  * @author Stephan Grundner
  * @since 1.0
  */
-abstract class AnnotationConfigProjection implements Projection {
+abstract class AnnotationConfigProjection extends AbstractProjection {
 
     private AnnotationConfigProjectionAdapter adapter
 

@@ -1,19 +1,51 @@
 version 'unspecified'
 
+buildscript {
+    repositories {
+        maven { url "http://repo.spring.io/libs-snapshot" }
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.3.0.RELEASE")
+//        classpath("org.springframework:springloaded:1.2.4.RELEASE")
+    }
+}
+
 apply plugin: 'groovy'
 apply plugin: 'java'
+apply plugin: 'spring-boot'
 
 sourceCompatibility = 1.5
 
 repositories {
     mavenCentral()
+    maven {
+        url 'http://m2.neo4j.org/content/repositories/releases/'
+    }
+    maven { url "https://repo.spring.io/libs-release" }
 }
 
 dependencies {
-    compile 'org.codehaus.groovy:groovy-all:2.3.11'
+    compile 'org.codehaus.groovy:groovy-all:2.4.+'
     testCompile group: 'junit', name: 'junit', version: '4.11'
 
-    compile 'org.springframework.boot:spring-boot:1.2.7.RELEASE'
-    compile 'org.springframework.boot:spring-boot-autoconfigure:1.2.7.RELEASE'
-    compile 'org.springframework.boot:spring-boot-starter-data-jpa:1.2.7.RELEASE'
+    compile("org.springframework.boot:spring-boot-starter")
+    compile("org.springframework.boot:spring-boot-devtools:1.3.0.RELEASE")
+
+    compile 'org.apache.commons:commons-lang3:+'
+//    compile 'org.apache.commons:commons-collections4:+'
+//    compile 'org.apache.commons:commons-compress:+'
+//    compile 'org.apache.commons:commons-exec:+'
+//    compile 'org.apache.commons:commons-csv:+'
+//    compile 'org.apache.commons:commons-email:+'
+//    compile 'commons-io:commons-io:+'
+
+    compile 'mysql:mysql-connector-java:5.1.38'
+//    compile 'com.h2database:h2:1.4.191'
+
+}
+
+springBoot {
+    executable = true
+    excludeDevtools = true
+//    requiresUnpack = []
 }

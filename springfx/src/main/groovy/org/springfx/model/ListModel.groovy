@@ -7,7 +7,7 @@ import javafx.collections.ObservableList
  *
  * @author Stephan Grundner
  */
-interface ListingModel {
+interface ListModel {
 
     ReadOnlyProperty<ObservableList<Model>> itemsProperty()
 

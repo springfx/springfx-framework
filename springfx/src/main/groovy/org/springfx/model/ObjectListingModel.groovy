@@ -9,7 +9,7 @@ import javafx.collections.ObservableList
  *
  * @author Stephan Grundner
  */
-class ObjectListingModel implements ListingModel {
+class ObjectListingModel implements ListModel {
 
     private final ObjectProperty<ObservableList<Model>> itemsProperty = new SimpleObjectProperty<>(this, 'items')
 

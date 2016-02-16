@@ -11,5 +11,6 @@ interface ProjectionService {
 
     Projector getProjector()
 
+    void show(Class<? extends Projection> projectionClass, Object key)
     void show(Class<? extends Projection> projectionClass)
 }

@@ -220,7 +220,8 @@ class FormPane extends Control {
 
     @Override
     public String getUserAgentStylesheet() {
-        FormPane.getResource("skin/form-pane.css").toExternalForm()
+//        FormPane.getResource("skin/form-pane.css").toExternalForm()
+        null
     }
 
     @Override
